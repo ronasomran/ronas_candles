@@ -116,7 +116,7 @@ function sendOrder() {
     return;
   }
   const message = cart.map(item => `${item.name} - ${item.price}€`).join('\n');
-  const phone = "0980251702"; 
+  const phone = "00963980251702"; 
   const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
   window.open(url, "_blank");
 }
@@ -124,3 +124,4 @@ function sendOrder() {
 
 </body>
 </html>
+
