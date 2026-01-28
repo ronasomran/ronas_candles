@@ -1,3 +1,5 @@
+<h1>🕯️ متجر الشموع</h1>
+
 <div class="products">
 
   <div class="product">
@@ -30,10 +32,7 @@
       margin: 0;
       padding: 20px;
     }
-    h1 {
-      text-align: center;
-      margin-bottom: 30px; 
-    h2 {
+    h1, h2 {
       text-align: center;
     }
     .products {
@@ -72,7 +71,6 @@
 
 <body>
 
-<h1>🕯️ متجر الشموع</h1>
 
 <div class="products">
 
@@ -118,7 +116,7 @@ function sendOrder() {
     return;
   }
   const message = cart.map(item => `${item.name} - ${item.price}€`).join('\n');
-  const phone = "49123456789"; // غيري الرقم برقمك
+  const phone = "0980251702"; 
   const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
   window.open(url, "_blank");
 }
@@ -126,4 +124,3 @@ function sendOrder() {
 
 </body>
 </html>
-
