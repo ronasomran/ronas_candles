@@ -14,20 +14,14 @@ body {
   color: white;
 }
 
-h1 {
+h1, h2 {
   text-align: center;
-  font-size: 32px;
-  letter-spacing: 2px;
-}
-
-h2 {
-  margin-top: 30px;
 }
 
 .products {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
 }
 
 .product {
@@ -37,11 +31,11 @@ h2 {
   border-radius: 15px;
   text-align: center;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  transition: 0.3s;
 }
 
-.product:hover {
-  transform: scale(1.05);
+.product img {
+  width: 100%;
+  border-radius: 10px;
 }
 
 button {
@@ -55,65 +49,80 @@ button {
 
 .add { background: green; color: white; }
 .remove { background: red; color: white; }
-.qty { background: orange; color: white; }
 
 #cart {
   background: white;
   color: black;
   padding: 15px;
   border-radius: 10px;
-  list-style: none;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+#totalBox {
+  font-weight: bold;
+  margin-top: 10px;
 }
 </style>
-
 </head>
 
 <body>
 
 <h1>🤍 Ronas Candles</h1>
 
-<h2>🕯️ الشموع</h2>
+<h2>🕯️ المنتجات</h2>
+
 <div class="products">
 
 <div class="product">
+<img src="https://via.placeholder.com/200">
 <h3>شمعة 1</h3>
-<p>السعر: 0 ل.س</p>
-<button class="add" onclick="addToCart('شمعة 1', 0)">أضف</button>
+<p>5000 ل.س</p>
+<button class="add" onclick="addToCart('شمعة 1',5000)">أضف</button>
 </div>
 
 <div class="product">
+<img src="https://via.placeholder.com/200">
 <h3>شمعة 2</h3>
-<p>السعر: 0 ل.س</p>
-<button class="add" onclick="addToCart('شمعة 2', 0)">أضف</button>
+<p>7000 ل.س</p>
+<button class="add" onclick="addToCart('شمعة 2',7000)">أضف</button>
 </div>
 
 </div>
 
-<h2>🧱 منتجات الكونكريت</h2>
-<div class="products">
-
-<div class="product">
-<h3>قطعة كونكريت 1</h3>
-<p>السعر: 0 ل.س</p>
-<button class="add" onclick="addToCart('كونكريت 1', 0)">أضف</button>
-</div>
-
-</div>
-
-<h2>🛒 سلة المشتريات</h2>
+<h2>🛒 السلة</h2>
 <ul id="cart"></ul>
-<button onclick="sendOrder()">إرسال الطلب</button>
+
+<p id="totalBox"></p>
+
+<h2>📦 بيانات الطلب</h2>
+
+<input id="name" placeholder="الاسم">
+<input id="phone" placeholder="رقم التواصل">
+<input id="address" placeholder="العنوان">
+<input id="location" placeholder="الموقع (لينك أو وصف)">
+
+<h3>🚚 التوصيل</h3>
+<input id="delivery" type="number" placeholder="شب التوصيل (مثلاً 3000)">
+
+<h3 id="finalTotal"></h3>
+
+<button onclick="sendOrder()">إرسال الطلب واتساب</button>
+<button onclick="saveCart()">💾 حفظ السلة</button>
 
 <script>
-let cart = [];
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 function addToCart(name, price) {
   let item = cart.find(i => i.name === name);
-  if(item) {
-    item.qty++;
-  } else {
-    cart.push({name, price, qty:1});
-  }
+  if(item) item.qty++;
+  else cart.push({name, price, qty:1});
   updateCart();
 }
 
@@ -121,51 +130,82 @@ function updateCart() {
   let cartEl = document.getElementById("cart");
   cartEl.innerHTML = "";
 
+  let total = 0;
+
   cart.forEach((item, index) => {
+    total += item.price * item.qty;
+
     let li = document.createElement("li");
     li.innerHTML = 
-      ${item.name} - ${item.qty} × ${item.price} ل.س
-      <button class="qty" onclick="increase(${index})">+</button>
-      <button class="qty" onclick="decrease(${index})">-</button>
-      <button class="remove" onclick="removeItem(${index})">❌</button>
+      ${item.name} - ${item.qty} × ${item.price}
+      <button onclick="increase(${index})">+</button>
+      <button onclick="decrease(${index})">-</button>
+      <button onclick="removeItem(${index})">❌</button>
     ;
     cartEl.appendChild(li);
   });
+
+  let delivery = Number(document.getElementById("delivery").value) || 0;
+
+  document.getElementById("totalBox").innerText =
+    "المجموع: " + total + " ل.س";
+
+  document.getElementById("finalTotal").innerText =
+    "المجموع مع التوصيل: " + (total + delivery) + " ل.س";
+
+  localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-function increase(index){
-  cart[index].qty++;
+function increase(i){ cart[i].qty++; updateCart(); }
+function decrease(i){
+  if(cart[i].qty > 1) cart[i].qty--;
+  else cart.splice(i,1);
   updateCart();
 }
+function removeItem(i){ cart.splice(i,1); updateCart(); }
 
-function decrease(index){
-  if(cart[index].qty > 1){
-    cart[index].qty--;
-  } else {
-    cart.splice(index,1);
-  }
-  updateCart();
-}
-
-function removeItem(index){
-  cart.splice(index,1);
-  updateCart();
+function saveCart(){
+  localStorage.setItem("cart", JSON.stringify(cart));
+  alert("تم حفظ السلة 💾");
 }
 
 function sendOrder(){
-  if(cart.length === 0){
-    alert("السلة فارغة!");
+  let name = document.getElementById("name").value;
+  let phone = document.getElementById("phone").value;
+  let address = document.getElementById("address").value;
+  let location = document.getElementById("location").value;
+  let delivery = document.getElementById("delivery").value;
+
+  if(!name  !phone  !address){
+    alert("رجاءً املأ بياناتك");
     return;
   }
 
-  let message = cart.map(item =>
-    ${item.name} - ${item.qty}
-  ).join("\n");
+  let total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  let finalTotal = total + Number(delivery || 0);
 
-  let phone = "+963980251702"; // 
-  let url = https://wa.me/${phone}?text=${encodeURIComponent(message)};
+  let items = cart.map(i => ${i.name} × ${i.qty}).join("\n");
+  let message = 
+🕯️ طلب جديد:
+الاسم: ${name}
+الرقم: ${phone}
+العنوان: ${address}
+الموقع: ${location}
+
+الطلبات:
+${items}
+
+المجموع: ${total} ل.س
+التوصيل: ${delivery} ل.س
+الإجمالي: ${finalTotal} ل.س
+;
+
+  let url = "https://wa.me/963980251702?text=" + encodeURIComponent(message);
+
   window.open(url, "_blank");
 }
+
+updateCart();
 </script>
 
 </body>
