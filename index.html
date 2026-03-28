@@ -251,13 +251,13 @@ function updateCart() {
     total += item.price * item.qty;
 
     let li = document.createElement("li");
-    li.innerHTML = 
+    li.innerHTML = `
       ${item.name} - ${item.qty} × ${item.price}
 
       <button onclick="increase(${index})">+</button>
       <button onclick="decrease(${index})">-</button>
       <button onclick="removeItem(${index})">❌</button>
-    ;
+    `;
 
     cartEl.appendChild(li);
   });
