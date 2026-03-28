@@ -223,5 +223,58 @@ updateCart();
 
 </script>
 
+<script>
+
+let cart = [];
+
+function addToCart(name, price) {
+  console.log("addToCart اشتغل");
+
+  let item = cart.find(i => i.name === name);
+
+  if(item){
+    item.qty++;
+  } else {
+    cart.push({name, price, qty:1});
+  }
+
+  updateCart();
+}
+
+function updateCart() {
+  let cartEl = document.getElementById("cart");
+  cartEl.innerHTML = "";
+
+  let total = 0;
+
+  cart.forEach((item, index) => {
+    total += item.price * item.qty;
+
+    let li = document.createElement("li");
+    li.innerHTML = 
+      ${item.name} - ${item.qty} × ${item.price}
+
+      <button onclick="increase(${index})">+</button>
+      <button onclick="decrease(${index})">-</button>
+      <button onclick="removeItem(${index})">❌</button>
+    ;
+
+    cartEl.appendChild(li);
+  });
+
+  document.getElementById("total").innerText = "المجموع: " + total;
+}
+
+function increase(i){ cart[i].qty++; updateCart(); }
+
+function decrease(i){
+  if(cart[i].qty > 1) cart[i].qty--;
+  else cart.splice(i,1);
+  updateCart();
+}
+
+function removeItem(i){ cart.splice(i,1); updateCart(); }
+
+</script>  
 </body>
 </html>
