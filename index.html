@@ -2,117 +2,28 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>Ronas Candles</title>
-
-<style>
-body {
-  font-family: Arial;
-  direction: rtl;
-  background: linear-gradient(to bottom, #7b1e3a, #3a0f1f);
-  margin: 0;
-  padding: 20px;
-  color: white;
-}
-
-h1, h2 {
-  text-align: center;
-}
-
-.products {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-}
-
-.product {
-  background: white;
-  color: black;
-  padding: 15px;
-  border-radius: 15px;
-  text-align: center;
-}
-
-button {
-  margin: 5px;
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.add { background: green; color: white; }
-.remove { background: red; color: white; }
-
-#cart {
-  background: white;
-  color: black;
-  padding: 15px;
-  border-radius: 10px;
-}
-
-input {
-  width: 100%;
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-#totalBox, #finalTotal {
-  font-weight: bold;
-  margin-top: 10px;
-}
-</style>
+<title>Test Cart</title>
 </head>
 
 <body>
 
-<h1>🤍 Ronas Candles</h1>
+<h2>🕯️ منتجات</h2>
 
-<h2>🕯️ المنتجات</h2>
-
-<div class="products">
-
-<div class="product">
-<h3>شمعة 1</h3>
-<p>5000 ل.س</p>
-<button class="add" onclick="addToCart('شمعة 1',5000)">أضف</button>
-</div>
-
-<div class="product">
-<h3>شمعة 2</h3>
-<p>7000 ل.س</p>
-<button class="add" onclick="addToCart('شمعة 2',7000)">أضف</button>
-</div>
-
-</div>
+<button onclick="addToCart('شمعة 1', 5000)">أضف شمعة 1</button>
+<button onclick="addToCart('شمعة 2', 7000)">أضف شمعة 2</button>
 
 <h2>🛒 السلة</h2>
 <ul id="cart"></ul>
 
-<p id="totalBox"></p>
-
-<h2>📦 بيانات العميل</h2>
-
-<input id="name" placeholder="الاسم">
-<input id="phone" placeholder="رقم التواصل">
-<input id="address" placeholder="العنوان">
-<input id="location" placeholder="الموقع">
-
-<h3>🚚 التوصيل</h3>
-<input id="delivery" type="number" placeholder="سعر التوصيل">
-
-<h3 id="finalTotal"></h3>
-
-<button onclick="sendOrder()">إرسال الطلب واتساب</button>
-<button onclick="saveCart()">💾 حفظ السلة</button>
+<p id="total"></p>
 
 <script>
 
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let cart = [];
 
 function addToCart(name, price) {
+  console.log("Clicked:", name); // للتأكد
+
   let item = cart.find(i => i.name === name);
 
   if(item){
@@ -134,27 +45,18 @@ function updateCart() {
     total += item.price * item.qty;
 
     let li = document.createElement("li");
-
     li.innerHTML = 
-      ${item.name} - ${item.qty} × ${item.price} = ${item.qty * item.price}
+      ${item.name} - ${item.qty} × ${item.price}
 
-      <button class="add" onclick="increase(${index})">+</button>
-      <button class="remove" onclick="decrease(${index})">-</button>
+      <button onclick="increase(${index})">+</button>
+      <button onclick="decrease(${index})">-</button>
       <button onclick="removeItem(${index})">❌</button>
     ;
 
     cartEl.appendChild(li);
   });
 
-  let delivery = Number(document.getElementById("delivery").value) || 0;
-
-  document.getElementById("totalBox").innerText =
-    "المجموع: " + total + " ل.س";
-
-  document.getElementById("finalTotal").innerText =
-    "الإجمالي مع التوصيل: " + (total + delivery) + " ل.س";
-
-  localStorage.setItem("cart", JSON.stringify(cart));
+  document.getElementById("total").innerText = "المجموع: " + total;
 }
 
 function increase(i){
@@ -175,50 +77,6 @@ function removeItem(i){
   cart.splice(i,1);
   updateCart();
 }
-
-function saveCart(){
-  localStorage.setItem("cart", JSON.stringify(cart));
-  alert("تم حفظ السلة 💾");
-}
-
-function sendOrder(){
-
-  let name = document.getElementById("name").value;
-  let phone = document.getElementById("phone").value;
-  let address = document.getElementById("address").value;
-  let location = document.getElementById("location").value;
-  let delivery = document.getElementById("delivery").value || 0;
-
-  if(!name  !phone  !address){
-    alert("املأ البيانات!");
-    return;
-  }
-
-  let total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-  let finalTotal = total + Number(delivery);
-
-  let items = cart.map(i => ${i.name} × ${i.qty}).join("\n");
-
-  let message = `
-🕯️ طلب جديد:
-الاسم: ${name}
-الرقم: ${phone}
-العنوان: ${address}
-الموقع: ${location}
-
-الطلبات:
-${items}
-لمجموع: ${total} ل.س
-التوصيل: ${delivery} ل.س
-الإجمالي: ${finalTotal} ل.س
-`;
-
-  let url = "https://wa.me/963980251702?text=" + encodeURIComponent(message);
-
-  window.open(url, "_blank");
-}
-
-updateCart();
 
 </script>
 
