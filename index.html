@@ -183,38 +183,51 @@ function saveCart(){
 
 function sendOrder(){
 
-  let name = document.getElementById("name").value;
-  let phone = document.getElementById("phone").value;
-  let address = document.getElementById("address").value;
-  let location = document.getElementById("location").value;
-  let delivery = document.getElementById("delivery").value || 0;
+  if(cart.length === 0){
+    alert("السلة فاضية!");
+    return;
+  }
+  
+  let name = 
+document.getElementById("name").value;
+  let phone = 
+document.getElementById("phone").value;
+  let address = 
+document.getElementById("address").value;
+  let location = 
+document.getElementById("location").value;
+  let delivery = 
+document.getElementById("delivery").value || 0;
 
   if(!name  !phone  !address){
     alert("املأ البيانات!");
     return;
   }
 
-  let total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-  let finalTotal = total + Number(delivery);
+  let total = 0;
+  
+let items = cart.map(item => {
+    total += item.price * item.qty;
+    return item.name + " × " + item.qty;
+  }).join("\n");
 
-  let items = cart.map(i => ${i.name} × ${i.qty}).join("\n");
+  let finalTotal = total + delivery;
 
-  let message = `
-🕯️ طلب جديد:
-الاسم: ${name}
-الرقم: ${phone}
-العنوان: ${address}
-الموقع: ${location}
+  let message =
+"🕯️ طلب جديد:\n\n" +
+"👤 الاسم: " + name + "\n" +
+"📞 الرقم: " + phone + "\n" +
+"📍 العنوان: " + address + "\n" +
+"🌍 الموقع: " + location + "\n\n" +
 
-الطلبات:
-${items}
+"🛒 الطلبات:\n" +
+items + "\n\n" +
 
-لمجموع: ${total} ل.س
-التوصيل: ${delivery} ل.س
-الإجمالي: ${finalTotal} ل.س
-`;
+"💰 المجموع: " + total + " ل.س\n" +
+"🚚 التوصيل: " + delivery + " ل.س\n" +
+"📦 الإجمالي: " + finalTotal + " ل.س";
 
-  let url = "https://wa.me/963980251702?text=" + encodeURIComponent(message);
+  let url = "https://wa.me/49123456789?text=" + encodeURIComponent(message);
 
   window.open(url, "_blank");
 }
